@@ -1,6 +1,6 @@
 # Redefining Zig Documententation
 As the title may suggest, this project is me redefining the terms used in Zig's Documentation.
-Note that, I am not actually changing the Zig Documentation, this is simply me interpretating what is written in the socumentation.
+Note that, I am not actually changing the Zig Documentation, this is simply me interpretating what is written in the documentation.
 
 # Why
 This project is mainly due to my own lack of understanding of zig. 
