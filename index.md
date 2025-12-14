@@ -3,4 +3,4 @@ As you can probably tell, this website is far from clean, I don't really know ho
 Otherwise I would have just written this in google docs.
 
 # Sections
-- [Basics](https://axion2077.github.io/ZigDocRedef/docs/basics.html)
+- [Chapter 0: Syntax](https://axion2077.github.io/ZigDocRedef/docs/syntax.html)
