@@ -7,7 +7,8 @@ Also, I will be reffering to zigs ```grammer.peg``` as PEG, but zig uses a custo
 
 # Rudimentary concepts.
 \n: In zig and most other programming languages ```\n``` is used to represent a new line.
-It is essentially considered one symbol, rather than a ```\``` and a ```n```, This is important for later.
+`\n` is an escape sequence, more on that later.
+Also it is essentially considered one symbol, rather than a ```\``` and a ```n```, This is important for later.
 
 []: In PEG ```[]``` is a character class. It's purpose is to match with one character. (this has a different meaning when coding, but that isn't important for right now)
 This is used to "consume" characters then move the input cursor forward.
@@ -35,9 +36,9 @@ I will replace ```/``` with ```|``` for clarity, but remember this if you want t
 
 This brings us to our first line of syntax in PEG.
 I would recommend you try to read it for yourself rather than looking at my explanation if you can.
-
+```
 line_comment = '//' ![!/][^\n]* | '////' [^\n]*
-
+```
 this translates to, if the string is ```//``` 
 check if the next character is NOT ```!``` or ```/``` 
 if so consume all characters except for a new line aka ```\n``` 
@@ -50,20 +51,77 @@ Also, * causes [^\n] to be repeated until it reaches a new line. instead of it c
 
 If you managed to figure out the purpose of this, congragulations, if you didn't that's ok.
 It's used to skip past any comments in a text, hence the name. "//" is the syntax used to declare a comment.
-
+```
 skip = ([ \n] | line_comment)*
-
+```
 First it tries to consume a space or a newline, if it is unable to do that, it runs line_comment.
 The parenthesis are used in conjuction with the * to indicate that it will run until it finds a character that is not a comment.
 Its purpose is to ignore all white space (spaces or new lines) and comments in code.
 
 This is the final syntax having to do with comments, then we will move on to some more complicated topics.
-
+```
 doc_comment = ('///' [^\n]* [ \n]* skip)+
-
+```
 It checks for '///' if it doesnt find it, then it does nothing.
 if it does find it, it consumes anything that isn't a newline, then it consumes spaces and new lines until it reaches a character. Then it runs skip.
 the + is used to indicate that it can either fail, aka not find ```///``` or consume an entire line of code.
+
+# Operators.
+This is section is relating to the syntax of operators In code, not in PEG, there will be more PEG later though.
+An operator is something like ```=``` ```+``` ```^``` or ```!``` etc. 
+Basically symbols that denote a certain operation.
+I will use `//` to give an explanation of each one.
+This is a list of all the simple ones.
+
+`+` // If you need me to explain this, you may want to be learning something easier.
+`-` // can be used to subtract numbers `1 = 2 - 1`, it is also a negation.
+    Meaning that if var a = 10, then we later write `-a` a becomes -10. The value of a is negated.
+`*` // This is an Asterisk, used to multiply values together. 9 = 3 * 3
+`/` // This is a Slash, used to divide values. 3 = 9 / 3 
+`%` // This is a Percent, it is used to find the remainder of a division.
+    A Remainder is what is left after dividing a number. `13 / 3` is 4 with a remainder of one.
+    Doing `13 % 3` would return 1, which is the remainder. `1 = 13 % 3`
+
+# Operator: Boolean
+`and` // checks if two or more conditions or variables are true.
+    This short circuits, meaning that if the first condition is false, it doesn't check the second.
+`or` // checks if one out of two or more conditions are true.
+    This also short circuits, meaning that if the first condition is true, it doesn't check the second.
+Make sure to put the value that is more likely to be false first with `and` and last with `or` to optimize speed. This is not required.
+`!` // When used on a condition or variable that is true or false, it returns the opposite.
+    i.e. if `a = true`, then `a!` is false and vice versa.
+`==` // Checks if a value or condition is equal to another value or condition, 
+    i.e. if so it outputs true, otherwise it outputs false.
+`!=` // Checks if a value or condition is NOT equal to another value or condition.
+`<` // less than | `<=` // less than or equal to | `>` // greater than | `>=` // greater than or equal to
+    If you took a math class you should probably be fammiliar with these terms.
+
+
+
+# Operator: Assignment
+These are your is equal to or ```=```, operators. They are used when defining a variable or constant.
+Ex: ```var x = 1```
+variables and constants will be explained later.
+There are multiple types of Assignment Operators, I will go through all of them before explaing the other types of operators.
+
+# Operator: Plain Assignment
+This is reserved soley for the ```=``` operator.
+Simply used to define that something is equal to something else.
+
+# Operator: Normal Arithmetic Assignment
+These are just simplifications of typical Assignments that include arithmetical operations.
+They are written like `var1` `operator` `is equal to` `var2`
+These are the logical equivalent of `var1` `is equal to` `var1` `operator` `var2`
+Example: `i += 1` is the same as `i = i + 1`
+
+I will be using `a` to represent var1 and `b` to represent var2.
+After the comment `//` i will give the logical equivalent and explain its use.
+
+`a += b` // `a = a + b` adds `b` to `a`
+`a -= b` // `a = a - b` subtracts `b` from `a`
+`a *= b` // `a = a * b` multiplys `a` by `b`
+`a /= b` // `a = a / b` divides `a` by `b`
+`a %= b` // `a = a % b` sets `a` equal to the remainder of `a` divided by `b`
 
 
 ```zig
