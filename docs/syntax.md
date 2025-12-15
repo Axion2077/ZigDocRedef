@@ -88,13 +88,12 @@ This is a list of all the simple ones.
 `or` // checks if one or more of two or more conditions are true.
     This also short circuits, meaning that if the first condition is true, it doesn't check the second.
 Make sure to put the value that is more likely to be false first with `and` and last with `or` to optimize speed. This is not required.
-`xor` // checks if only one out of two or more conditions is true. if a and b is true, false, if neither a nor b, false. 
-    only a or b can be true for the `xor` to return true. Obviously it has to check all conditions so it doesn't short circuit.
 `!` // When used on a condition or variable that is true or false, it returns the opposite.
     i.e. if `a = true`, then `a!` is false and vice versa.
 `==` // Checks if a value or condition is equal to another value or condition, 
     i.e. if so it outputs true, otherwise it outputs false.
 `!=` // Checks if a value or condition is NOT equal to another value or condition.
+    This is the logical equivalent of an `xor` operator, Zig does not have an `xor` operator.
 `<` // less than | `<=` // less than or equal to | `>` // greater than | `>=` // greater than or equal to
     If you took a math class you would probably be fammiliar with these terms.
 
@@ -102,7 +101,25 @@ Make sure to put the value that is more likely to be false first with `and` and 
 These are your is equal to or ```=```, operators. They are used when defining a variable or constant.
 Ex: ```var x = 1```
 variables and constants will be explained later.
-There are multiple types of Assignment Operators, I will go through all of them before explaing the other types of operators.
+There are multiple types of Assignment Operators, I will go through all of them down below.
+
+I'll briefly explain the Assignment Syntax, then begin. (I'll go into more detail later.)
+`(const | var) Identifier(: TypeExpr)? ByteAlign? AddrSpace? LinkSection?`
+`(const | var)` means you must either have const or var, at the beginning of assignment.
+Const, means constant, used to declare a constant unchanging value.
+Var, means variable, used to declare a changing value.
+I will be using the word variable to talk about both const and var, confusing I know, sorry not sorry.
+
+The Identifier is a string of characters. i.e. `Chicken`
+There are a few rules for what can and cannot be an Identifier, Thats for later though.
+
+This section `(: TypeExpr)?`
+the `()?` Indicates that TypeExpr is optional, most of the time TypeExpr is not optional. (I'll get into why later)
+TypeExpr is basically the type of value that you are using. 
+If you want the value to be an 8bit unsigned integer, thats u8. (u8 Has no negative numbers, only positive.)
+If you want it to be signed thats i8. (about half of i8 is negative)
+When adding a type to an identifier you must add a colon before it.
+Ex: `const chicken: u8 = 1`
 
 # Operator: Assignment: Plain
 This is reserved soley for the ```=``` operator.
@@ -153,9 +170,9 @@ This is pretty self explanatory.
 The bigger brother to Wrapping, if having a value reset once it reaches the integer limit was annoying, you can use the saturation operators to have the value do nothing instead.
 In other words, if you were to add 1 to 255, it would stay 255, and if you were to subtract 1 from 0, it would stay zero.
 
-`+|` // if an addition would overflow, it is ignored.
-`-|` // if a subtraction would overflow, it is ignored.
-`*|` // if a multiplication would overflow, it is ignored.
+`+|` // if an addition would overflow, it caps instead.
+`-|` // if a subtraction would overflow, it caps instead.
+`*|` // if a multiplication would overflow, it caps instead.
 
 Unfortunately Saturation doesn't have a negation operator built in to zig, mainly because of how useless it would be.
 If you want to annoy the devs, asking them to add that would be a great place to start.
@@ -163,9 +180,9 @@ If you want to annoy the devs, asking them to add that would be a great place to
 # Operator: Assignment: Saturation Arithmetic
 Another self explanatory section.
 
-`a +|= b` // `a = a +| b` adds `b` to `a` and does nothing if the integer would overflow.
-`a -|= b` // `a = a -| b` subtracts `b` from `a` and does nothing if the integer would overflow.
-`a *|= b` // `a = a *| b` multiplies `b` to `a` and does nothing if the integer would overflow.
+`a +|= b` // `a = a +| b` adds `b` to `a` and caps if the integer would overflow.
+`a -|= b` // `a = a -| b` subtracts `b` from `a` and caps if the integer would overflow.
+`a *|= b` // `a = a *| b` multiplies `b` to `a` and caps if the integer would overflow.
 
 # Operator: Bitwise Boolean
 These operators are for very low level computations. They quite literally operate on a binary level, aka zeros and ones.
@@ -173,11 +190,12 @@ That isn't to say they are meant for kernel or os level code.
 Bitwise operators can be used to do multiple `and` `or` or `xor` opertations all at once. Much faster than doing multiple normal `and` `or` or `xor` operations.
 Note, do not use Bitwise Operators like Normal Operators, they are much different.
 
-`&` \\ bitwise `and` operator, if the bit on the first and second value both are one, the bit is set to one. 
+`&` \\ bitwise `and` operator, if the bit on both are one, the bit is set to one. 
 `|` \\ bitwise `or` operator, if the bit on either or both is one, the bit is set to one.
-`^` \\ bitwiste `xor` operator. if the bit on either only, is one, the bit is set to one.
+`^` \\ bitwise `xor` operator. if the bit on either only is one, the bit is set to one.
+`~a` \\ bitwise negation operator. for every bit of `a`, if bit is 1, bit becomes zero and vice versa.
+    Ex: ~0b0101 = 0b1010
 
-If the condition is not met the bit is set to zero.
 
 # Small demonstration of Bitwise Boolean Operators:
 In Zig, binary numbers can be written as `0b00`
@@ -204,7 +222,7 @@ const c = a | b;
 Because most of the 0 are zero on both sides, they don't change. 
 Meaning `c = 0b10011` which is 19.
 
-Although I said ealier that bitwise operators, operate on a binary level, you can actually use any type of number with them.
+Although I said ealier that bitwise operators operate on a binary level, you can actually use any type of number with them.
 ```
 const a = 15; //this is equal to 0b1111
 const b = 12; //this is equal to 0b1100
@@ -246,16 +264,16 @@ Very straightforward.
 These operators can shift bits left or right.
 Example: 0b11 >> 1 = 0b01 // 3 >> 1 = 1
 The bit is shifted to the right, which means that the value decreases by a power of 2. 
-If a bit is shifted to the right beyond the integerlimit, it is deleted. 
+If a bit is shifted to the right beyond the integerlimit, it is removed. 
 but if it is shifted left beyond the integer limit, there is an overflow.
 
-`a >> b` Right Bitshift, a decreases by 2 to the power of b, per bit
-`a<< b` Left Bitshift, a increases by 2 to the power of b, per bit.
+`a >> b` Right Bitshift, a decreases by a factor of b, per bit
+`a<< b` Left Bitshift, a increases by a factor of b, per bit.
 
 `3 << 1 = 6` // `0b0011` becomes `0b0110` 
 `3 << 2 = 12` // `0b0011` becomes ` 0b1100`
 
-For both left and right shift, Zig requires that b is known at comptime, or that the type of b is equal to Log2(Number of bites in a)
+For both left and right shift, Zig requires that b is known at comptime, or that the type of b is equal to Log2(Number of bits in a)
 The reason for this is because, shifting too far left will cause an overflow, so Zig prevents this by limiting the byte size of b, or by requiring it to be known during comptime.
 
 Worthless Rant: {
@@ -264,11 +282,51 @@ So this restriction shouldn't be neccesary for right shifting.
 Also if a was something like 0b1000, shifting it one to the left would cause it to overflow anyway. the restriction doesn't really remove any foot guns.
 
 They have Saturated Left BitShift, from my perspective, they might aswell just force that instead.
-But, I am definitely not a 10x programmer and a large amount of Zig's Documentation is incomplete, most of my information is coming from third party sources. 
+But, I am definitely not a 10x programmer and a large amount of Zig's Documentation is nondescript, most of my information is coming from third party sources. 
 Maybe they have a reason for doing this, I couldn't see one though.
 }
-Log2(Number of bites in a) looks pretty complicated, but it is very simple.
+Log2(Number of bites in a) looks pretty complicated, but it is simple enough in practice.
+For example, if you were to put Log2(8) into your calculator, you would get aproximately 1.24011
 
+This is not what the Devs mean by Log2(Number of bites in a)
+What they actually meant is,
+`2` `to the power of` `b's type` `is equal to` `the number of bits in a`
+Because of that we know that the number if bits in `a` is 8, then `b's type` is 3
+because 2 to the power of 3, is equal to 8.
+i.e. 2 * 2 * 2 = 8
 
+This is important because the maximum number a 3 bit digit can store is 7. i.e. 0b111 = 7
+And the maximum number of bit shifts that can be done to an 8 bit binary number is 7.
+i.e. 0b00000001 << 7 = 0b10000000
+
+So in practice this would look like.
+```
+const a = 0b00000001
+const b: u3 = 5;
+const c = a << b // 0b00100000 = 32
+```
+I want to point out that to a developer unfamilliar with Zig, this is a very cursed solution.
+Because Most programming languages dont allow you to set a number to an arbitrary number of bits like 3.
+They must be a power of 2. i.e. 2, 4, 8, 16, 32 etc.
+
+I dont really understand the purpose of bitshifting so i will just give you a potential usage then move on.
+
+Say for example you didn't want to make a bunch of variables when using bitwise boolean. And you wanted to simplify that code further.
+You could use bitshifting to create something like this.
+```
+var a: u4 = 0 // variable is declared outside of function
+fn function() { //ignore this for now
+a <<= 1; // shifts a to the left,
+a += 1  // adds 1 to a
+} 
+```
+(I haven't covered functions yet so that will have to wait.)
+This code shifts `a` to the left then adds `1`.  // 0b0001
+When the function is called for a second time, 
+`a` gets shifted by 1 // 0b0010
+then 1 is added to `a` // 0b0011
+Ex: first iteration: 0b0001, second iteration: 0b0011, third iteration: 0b0111, fourth iteration: 0b1111 and so on.
+
+# Operator: Assignment: Bitshift
 
 
