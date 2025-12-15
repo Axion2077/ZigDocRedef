@@ -64,7 +64,7 @@ doc_comment = ('///' [^\n]* [ \n]* skip)+
 ```
 It checks for '///' if it doesnt find it, then it does nothing.
 if it does find it, it consumes anything that isn't a newline, then it consumes spaces and new lines until it reaches a character. Then it runs skip.
-the + is used to indicate that it can either fail, aka not find ```///``` or consume an entire line of code.
+the + is used to indicate that it can either fail, aka not find ```///``` or consume atlease one entire line of code.
 
 # Operators
 This is section is relating to the syntax of operators In code, not in PEG, there will be more PEG later though.
