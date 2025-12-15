@@ -326,7 +326,6 @@ When the function is called for a second time,
 `a` gets shifted by 1 // 0b0010
 then 1 is added to `a` // 0b0011
 Ex: first iteration: 0b0001, second iteration: 0b0011, third iteration: 0b0111, fourth iteration: 0b1111 and so on.
-
 # Operator: Assignment: Bitshift
 
 
