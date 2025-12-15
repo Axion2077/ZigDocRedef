@@ -66,7 +66,7 @@ It checks for '///' if it doesnt find it, then it does nothing.
 if it does find it, it consumes anything that isn't a newline, then it consumes spaces and new lines until it reaches a character. Then it runs skip.
 the + is used to indicate that it can either fail, aka not find ```///``` or consume an entire line of code.
 
-# Operators.
+# Operators
 This is section is relating to the syntax of operators In code, not in PEG, there will be more PEG later though.
 An operator is something like ```=``` ```+``` ```^``` or ```!``` etc. 
 Basically symbols that denote a certain operation.
@@ -85,18 +85,18 @@ This is a list of all the simple ones.
 # Operator: Boolean
 `and` // checks if two or more conditions or variables are true.
     This short circuits, meaning that if the first condition is false, it doesn't check the second.
-`or` // checks if one out of two or more conditions are true.
+`or` // checks if one or more of two or more conditions are true.
     This also short circuits, meaning that if the first condition is true, it doesn't check the second.
 Make sure to put the value that is more likely to be false first with `and` and last with `or` to optimize speed. This is not required.
+`xor` // checks if only one out of two or more conditions is true. if a and b is true, false, if neither a nor b, false. 
+    only a or b can be true for the `xor` to return true. Obviously it has to check all conditions so it doesn't short circuit.
 `!` // When used on a condition or variable that is true or false, it returns the opposite.
     i.e. if `a = true`, then `a!` is false and vice versa.
 `==` // Checks if a value or condition is equal to another value or condition, 
     i.e. if so it outputs true, otherwise it outputs false.
 `!=` // Checks if a value or condition is NOT equal to another value or condition.
 `<` // less than | `<=` // less than or equal to | `>` // greater than | `>=` // greater than or equal to
-    If you took a math class you should probably be fammiliar with these terms.
-
-
+    If you took a math class you would probably be fammiliar with these terms.
 
 # Operator: Assignment
 These are your is equal to or ```=```, operators. They are used when defining a variable or constant.
@@ -104,11 +104,11 @@ Ex: ```var x = 1```
 variables and constants will be explained later.
 There are multiple types of Assignment Operators, I will go through all of them before explaing the other types of operators.
 
-# Operator: Plain Assignment
+# Operator: Assignment: Plain
 This is reserved soley for the ```=``` operator.
 Simply used to define that something is equal to something else.
 
-# Operator: Normal Arithmetic Assignment
+# Operator: Assignment: Normal Arithmetic
 These are just simplifications of typical Assignments that include arithmetical operations.
 They are written like `var1` `operator` `is equal to` `var2`
 These are the logical equivalent of `var1` `is equal to` `var1` `operator` `var2`
@@ -123,9 +123,152 @@ After the comment `//` i will give the logical equivalent and explain its use.
 `a /= b` // `a = a / b` divides `a` by `b`
 `a %= b` // `a = a % b` sets `a` equal to the remainder of `a` divided by `b`
 
+# Operator: Wrapping Arithmetic
+You may note that the title doesn't contain "assignment" and that is because I need to explain a few more details before continuing. 
+If you have been in the programming world for a time, you may have heard about values in programs that somehow go from 0 to 255, because 1 was subtracted from zero.
 
-```zig
-pub fn main() void {
-    // Hello
-}
+This is known as wrapping, 8 byte integers can only store 255 digits, going above that number is impossible, so to avoid overflow and causing the program to crash. 
+They would have the variable wrap around, going from 0 to 255 or 255 to 0.
+
+The operator for wrapping, is `%` but it must be added onto another operator in order for it to have this effect.
+
+`+%` // if an addition would overflow, it wraps around.
+`-%` // if a subtraction would overflow, it wraps around.
+`*%` // if a multiplication would overflow, it wraps around.
+
+Note that division can not go below or above the integer limit, (unless your dividing by a fraction, in which case just multiply instead) and remainders can never go above or below the integer limit so they are ignored.
+Stupidly enough, you can wrap negations. i.e.
+
+`-%a` // you may think this is completely useless, but i8, has 128 negative numbers and 127 positive numbers, so if -128 were to be negated, it would cause an integer overflow. so there is one tiny usecase for it.
+I am not going to ignore anything out of princepal, sorry if you don't care about info like this.
+
+# Operator: Assignment: Wrapping Arithmetic
+This is pretty self explanatory.
+
+`a +%= b` // `a = a +% b` adds `b` to `a` and wraps if the integer would overflow.
+`a -%= b` // `a = a -% b` subtracts `b` from `a` and wraps if the integer would overflow.
+`a *%= b` // `a = a *% b` multiplies `b` to `a` and wraps if the integer would overflow.
+
+# Operator: Saturation Arithmetic
+The bigger brother to Wrapping, if having a value reset once it reaches the integer limit was annoying, you can use the saturation operators to have the value do nothing instead.
+In other words, if you were to add 1 to 255, it would stay 255, and if you were to subtract 1 from 0, it would stay zero.
+
+`+|` // if an addition would overflow, it is ignored.
+`-|` // if a subtraction would overflow, it is ignored.
+`*|` // if a multiplication would overflow, it is ignored.
+
+Unfortunately Saturation doesn't have a negation operator built in to zig, mainly because of how useless it would be.
+If you want to annoy the devs, asking them to add that would be a great place to start.
+
+# Operator: Assignment: Saturation Arithmetic
+Another self explanatory section.
+
+`a +|= b` // `a = a +| b` adds `b` to `a` and does nothing if the integer would overflow.
+`a -|= b` // `a = a -| b` subtracts `b` from `a` and does nothing if the integer would overflow.
+`a *|= b` // `a = a *| b` multiplies `b` to `a` and does nothing if the integer would overflow.
+
+# Operator: Bitwise Boolean
+These operators are for very low level computations. They quite literally operate on a binary level, aka zeros and ones.
+That isn't to say they are meant for kernel or os level code.
+Bitwise operators can be used to do multiple `and` `or` or `xor` opertations all at once. Much faster than doing multiple normal `and` `or` or `xor` operations.
+Note, do not use Bitwise Operators like Normal Operators, they are much different.
+
+`&` \\ bitwise `and` operator, if the bit on the first and second value both are one, the bit is set to one. 
+`|` \\ bitwise `or` operator, if the bit on either or both is one, the bit is set to one.
+`^` \\ bitwiste `xor` operator. if the bit on either only, is one, the bit is set to one.
+
+If the condition is not met the bit is set to zero.
+
+# Small demonstration of Bitwise Boolean Operators:
+In Zig, binary numbers can be written as `0b00`
+In this case `0b` literally just means binary, and the `00` means that it is a two bit binary number.
+`0b000` is a three bit binary number, etc.
+
+Because binary is a base-2 number system, the previous number is always 2 times bigger than the next number.
+`0b10` is equal to `2` while `0b01` is equal to `1`
+`0b100 = 4` and `0b11 = 3` and so on.
+if we did
 ```
+const a = 0b01; // this is equal to one
+const b = 0b10; // this is equal to two
+const c = a | b;
+```
+Because `|` allows either to be 1, `c = 0b11` which is 3.
+
+This starts to get pretty confusing at first, once we use bigger numbers.
+```
+const a = 0b10001; //this is equal to 17
+const b = 0b10011; //this is equal to 19
+const c = a | b;
+```
+Because most of the 0 are zero on both sides, they don't change. 
+Meaning `c = 0b10011` which is 19.
+
+Although I said ealier that bitwise operators, operate on a binary level, you can actually use any type of number with them.
+```
+const a = 15; //this is equal to 0b1111
+const b = 12; //this is equal to 0b1100
+const c = a | b;
+```
+This will result in, `c = 15` because bitwise operators only care about the binary value of a number.
+
+Why this is important:
+lets say you wanted a function to run only if four conditions were true.
+How would you write it without making a massive chain of ands.
+```
+const a = 0b01; // 1
+const b = 0b10; // 2
+const c = a | b; // 3
+const d = 0b01; //1
+const e = 0b10; // 2
+const f = d | e; // 3
+if ((c & f) == 3) {run code} // c and f both have the exact same bits, so neither change.
+```
+for `(c & f) == 3` using `0b11` instead of `3` also works.
+With this method you can write a long chain of conditional arguments fairly simply.
+This is also useful for confusing the crap out of Zig programmers who don't know core details like this.
+i.e. 
+```
+const a = 7; //0b0111
+const b = 9; //0b1001
+if ((a | b) == 15) {code here} //0b1111 = 15
+```
+if you wrote something like this, without adding the bit number comments, they would probably have no idea what is happening. 
+
+# Operator: Assignment: Bitwise Boolean
+Very straightforward.
+
+`a &= b` // `a = a & b` 
+`a |= b` // `a = a | b`
+`a ^= b` // `a = a ^ b`
+
+# Operator: Bitshift
+These operators can shift bits left or right.
+Example: 0b11 >> 1 = 0b01 // 3 >> 1 = 1
+The bit is shifted to the right, which means that the value decreases by a power of 2. 
+If a bit is shifted to the right beyond the integerlimit, it is deleted. 
+but if it is shifted left beyond the integer limit, there is an overflow.
+
+`a >> b` Right Bitshift, a decreases by 2 to the power of b, per bit
+`a<< b` Left Bitshift, a increases by 2 to the power of b, per bit.
+
+`3 << 1 = 6` // `0b0011` becomes `0b0110` 
+`3 << 2 = 12` // `0b0011` becomes ` 0b1100`
+
+For both left and right shift, Zig requires that b is known at comptime, or that the type of b is equal to Log2(Number of bites in a)
+The reason for this is because, shifting too far left will cause an overflow, so Zig prevents this by limiting the byte size of b, or by requiring it to be known during comptime.
+
+Worthless Rant: {
+This is pretty silly to me because, shifting right will not cause a overflow (Maybe if you shift right a negative amount, but that pretty stupid)
+So this restriction shouldn't be neccesary for right shifting.
+Also if a was something like 0b1000, shifting it one to the left would cause it to overflow anyway. the restriction doesn't really remove any foot guns.
+
+They have Saturated Left BitShift, from my perspective, they might aswell just force that instead.
+But, I am definitely not a 10x programmer and a large amount of Zig's Documentation is incomplete, most of my information is coming from third party sources. 
+Maybe they have a reason for doing this, I couldn't see one though.
+}
+Log2(Number of bites in a) looks pretty complicated, but it is very simple.
+
+
+
+
