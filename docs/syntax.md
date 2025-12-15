@@ -75,9 +75,9 @@ This is a list of all the simple ones.
 
 `+` // If you need me to explain this, you may want to be learning something easier.
 `-` // can be used to subtract numbers `1 = 2 - 1`, it is also a negation.
-    Meaning that if var a = 10, then we later write `-a` a becomes -10. The value of a is negated.
-`*` // This is an Asterisk, used to multiply values together. 9 = 3 * 3
-`/` // This is a Slash, used to divide values. 3 = 9 / 3 
+    Meaning that if `a = 10`, then we later write `-a`, `a` becomes `-10`. The value of `a` is negated.
+`*` // This is an Asterisk, used to multiply values together. `9 = 3 * 3`
+`/` // This is a Slash, used to divide values. `3 = 9 / 3`
 `%` // This is a Percent, it is used to find the remainder of a division.
     A Remainder is what is left after dividing a number. `13 / 3` is 4 with a remainder of one.
     Doing `13 % 3` would return 1, which is the remainder. `1 = 13 % 3`
